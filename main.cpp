@@ -2,7 +2,10 @@
 #include "tiffio.h"
 
 
+
 int main() {
+
+
     TIFF *inputTiff = TIFFOpen("C:\\Users\\trish\\Desktop\\iso.tiff", "r");
     if (!inputTiff) {
         std::cerr << "Ошибка открытия входного файла" << std::endl;
@@ -27,7 +30,26 @@ int main() {
     TIFFSetField(outputTiff, TIFFTAG_PHOTOMETRIC, photoMetric);
     TIFFSetField(outputTiff, TIFFTAG_COMPRESSION, COMPRESSION_NONE);
 
+
     uint16_t *scanlineData = (uint16_t *) _TIFFmalloc(TIFFScanlineSize(inputTiff));
+
+    int max = 0;
+    int min = 65536;
+
+    for (uint32_t row = 0; row < height; row++) {
+        TIFFReadScanline(inputTiff, scanlineData, row);
+
+        for (uint32_t col = 0; col < width; col++) {
+            for (uint16_t channel = 0; channel < samplesPerPixel; channel++) {
+                uint16_t sample = scanlineData[col * samplesPerPixel + channel];
+                if (sample>max) max = sample;
+                if (sample<min) min = sample;
+            }
+        }
+
+    }
+
+    double coeffScale = 255.0/(max-min);
 
     for (uint32_t row = 0; row < height; row++) {
         TIFFReadScanline(inputTiff, scanlineData, row);
@@ -36,11 +58,8 @@ int main() {
         for (uint32_t col = 0; col < width; col++) {
             for (uint16_t channel = 0; channel < samplesPerPixel; channel++) {
                 uint16_t sample = scanlineData[col * samplesPerPixel + channel];
-                if (sample > 256) {
-                    outputScanlineData[col * samplesPerPixel + channel] = static_cast<uint8_t>(sample >> 8);
-                } else {
-                    outputScanlineData[col * samplesPerPixel + channel] = static_cast<uint8_t>(sample);
-                }
+                outputScanlineData[col * samplesPerPixel + channel] = static_cast<uint8_t>(sample *coeffScale);
+
             }
         }
 
