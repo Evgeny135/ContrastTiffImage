@@ -1,11 +1,11 @@
 #include <iostream>
-#include "tiffio.h"
+#include <tiffio.h>
+#include <vector>
+#include "Spectrum.h"
 
 
 
 int main() {
-
-
     TIFF *inputTiff = TIFFOpen("C:\\Users\\trish\\Desktop\\iso.tiff", "r");
     if (!inputTiff) {
         std::cerr << "Ошибка открытия входного файла" << std::endl;
@@ -33,21 +33,24 @@ int main() {
 
     uint16_t *scanlineData = (uint16_t *) _TIFFmalloc(TIFFScanlineSize(inputTiff));
 
-    int max = 0;
-    int min = 65536;
 
+    Spectrum spectrum;
     for (uint32_t row = 0; row < height; row++) {
         TIFFReadScanline(inputTiff, scanlineData, row);
 
         for (uint32_t col = 0; col < width; col++) {
             for (uint16_t channel = 0; channel < samplesPerPixel; channel++) {
                 uint16_t sample = scanlineData[col * samplesPerPixel + channel];
-                if (sample>max) max = sample;
-                if (sample<min) min = sample;
+                spectrum.createSpectrum(sample);
             }
         }
-
     }
+
+    spectrum.findMaxSearchablePixel();
+    spectrum.findMaxAndMin();
+
+    int max = spectrum.getMax();
+    int min =spectrum.getMin();
 
     double coeffScale = 255.0/(max-min);
 
