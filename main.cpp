@@ -2,10 +2,13 @@
 #include <tiffio.h>
 #include <vector>
 #include "Spectrum.h"
-
+#include <chrono>
 
 
 int main() {
+
+    auto start = std::chrono::steady_clock::now();
+
     TIFF *inputTiff = TIFFOpen("C:\\Users\\trish\\Desktop\\iso.tiff", "r");
     if (!inputTiff) {
         std::cerr << "Ошибка открытия входного файла" << std::endl;
@@ -34,7 +37,7 @@ int main() {
     uint16_t *scanlineData = (uint16_t *) _TIFFmalloc(TIFFScanlineSize(inputTiff));
 
 
-    Spectrum spectrum;
+    Spectrum spectrum(0.3);
     for (uint32_t row = 0; row < height; row++) {
         TIFFReadScanline(inputTiff, scanlineData, row);
 
@@ -61,6 +64,11 @@ int main() {
         for (uint32_t col = 0; col < width; col++) {
             for (uint16_t channel = 0; channel < samplesPerPixel; channel++) {
                 uint16_t sample = scanlineData[col * samplesPerPixel + channel];
+                if (sample<min){
+                    sample = min;
+                }else if (sample>max){
+                    sample = max;
+                }
                 outputScanlineData[col * samplesPerPixel + channel] = static_cast<uint8_t>(sample *coeffScale);
 
             }
@@ -74,6 +82,13 @@ int main() {
     _TIFFfree(scanlineData);
     TIFFClose(inputTiff);
     TIFFClose(outputTiff);
+
+    auto end = std::chrono::steady_clock::now();
+
+    auto diff = end - start;
+
+    std::cout << std::chrono::duration <double, std::milli> (diff).count() << " ms" << std::endl;
+
 
     return 0;
 }

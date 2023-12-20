@@ -8,6 +8,7 @@
 class Spectrum {
 public:
     Spectrum();
+    Spectrum(double percent);
     ~Spectrum();
     void createSpectrum(int sample);
 
@@ -18,10 +19,11 @@ public:
     void findMaxSearchablePixel();
 
 private:
-    std::map<int ,int> spectrumMap;
+    int array[65536];
     int maxSearchable = 0;
     int max = 0;
     int min = 65536;
+    double percent = 0.3;
 
 };
 
