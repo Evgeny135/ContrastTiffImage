@@ -23,7 +23,7 @@ private:
     int maxSearchable = 0;
     int max = 0;
     int min = 65536;
-    double percent = 0.3;
+    double percent = 0.1;
 
 };
 

@@ -37,7 +37,7 @@ int main() {
     uint16_t *scanlineData = (uint16_t *) _TIFFmalloc(TIFFScanlineSize(inputTiff));
 
 
-    Spectrum spectrum(0.3);
+    Spectrum spectrum(0.1);
     for (uint32_t row = 0; row < height; row++) {
         TIFFReadScanline(inputTiff, scanlineData, row);
 
@@ -64,11 +64,7 @@ int main() {
         for (uint32_t col = 0; col < width; col++) {
             for (uint16_t channel = 0; channel < samplesPerPixel; channel++) {
                 uint16_t sample = scanlineData[col * samplesPerPixel + channel];
-                if (sample<min){
-                    sample = min;
-                }else if (sample>max){
-                    sample = max;
-                }
+
                 outputScanlineData[col * samplesPerPixel + channel] = static_cast<uint8_t>(sample *coeffScale);
 
             }
