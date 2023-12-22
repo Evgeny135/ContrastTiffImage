@@ -10,7 +10,7 @@ public:
     Spectrum();
     Spectrum(double percent);
     ~Spectrum();
-    void createSpectrum(int sample);
+    void createSpectrum(uint16_t sample);
 
     int getMax() const;
 

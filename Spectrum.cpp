@@ -6,7 +6,7 @@ Spectrum::Spectrum() = default;
 
 Spectrum::~Spectrum() = default;
 
-void Spectrum::createSpectrum(int sample) {
+void Spectrum::createSpectrum(uint16_t sample) {
     array[sample] += 1;
 }
 
@@ -19,8 +19,8 @@ void Spectrum::findMaxSearchablePixel() {
 void Spectrum::findMaxAndMin() {
     for (int i = 0; i < 65536; i++) {
         if (array[i] >= percent * maxSearchable) {
-            if (i >= max) max = i;
-            if (i <= min) min = i;
+            max = std::max(max,i);
+            min = std::min(min,i);
         }
     }
 }
