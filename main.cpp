@@ -37,7 +37,7 @@ int main() {
     uint16_t *scanlineData = (uint16_t *) _TIFFmalloc(TIFFScanlineSize(inputTiff));
 
 
-    Spectrum spectrum(0.1);
+    Spectrum spectrum(0.969);
     for (uint32_t row = 0; row < height; row++) {
         TIFFReadScanline(inputTiff, scanlineData, row);
 
